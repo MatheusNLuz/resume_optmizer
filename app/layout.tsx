@@ -21,9 +21,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ATSForge | Otimizador de Currículos",
     description: "Crie o currículo perfeito com a ajuda de Agentes de IA.",
-  },
-  icons: {
-    icon: "/favicon.ico",
   }
 };
 

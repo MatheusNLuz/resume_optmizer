@@ -10,24 +10,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Mode is required" }, { status: 400 });
     }
 
-    // Create the analysis record first
+    // Create the analysis record
     const analysis = await prisma.analysis.create({
       data: {
         mode,
         selectedLanguage: selectedLanguage || "unknown",
         selectedTemplate: "basic-ats",
         resumeInputType: "PDF_UPLOAD",
+        jobLocation: jobLocation || null,
       },
     });
-
-    // Save jobLocation via raw SQL since prisma client may not have the field typed yet
-    if (jobLocation) {
-      await prisma.$executeRawUnsafe(
-        `UPDATE Analysis SET jobLocation = ? WHERE id = ?`,
-        jobLocation,
-        analysis.id
-      );
-    }
 
     return NextResponse.json({ ...analysis, jobLocation: jobLocation || null });
   } catch (error) {
