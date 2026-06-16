@@ -78,11 +78,7 @@ Job Comparison/Gaps:\n${analysis.comparisonJson || "N/A"}
 
 Candidate's Extra Answers:\n${answersText || "None"}`;
 
-    // Fetch jobLocation via raw SQL since prisma client may not have the field typed yet
-    const locationResult = await prisma.$queryRawUnsafe<{jobLocation: string | null}[]>(
-      `SELECT jobLocation FROM Analysis WHERE id = ?`, analysisId
-    );
-    const jobLocation = locationResult?.[0]?.jobLocation || null;
+    const jobLocation = analysis.jobLocation || null;
 
     const systemPrompt = buildOptimizePrompt(analysis.selectedLanguage, jobLocation);
 
