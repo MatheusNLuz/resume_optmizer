@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Analysis {
+  id                    String   @id @default(cuid())
+  mode                  String
+  professionalTarget    String?
+  selectedLanguage      String
+  selectedTemplate      String
+  resumeInputType       String
+  originalResumeText    String?
+  parsedResumeText      String?
+  jobDescription        String?
+  jobLocation           String?
+  initialScores         String?
+  finalScores           String?
+  analysisJson          String?
+  jobParseJson          String?
+  comparisonJson        String?
+  consensusJson         String?
+  truthGuardJson        String?
+  gamificationJson      String?
+  finalResumeJson       String?
+  coverLetter           String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  files                 FileAsset[]
+  questions             SmartQuestion[]
+  exports               PdfExport[]
+}
+
+model SmartQuestion {
+  id          String   @id @default(cuid())
+  analysisId String
+  question   String
+  reason     String
+  category   String
+  answerType String
+  options    String?
+  answer     String?
+  suggestedAnswer String?
+  confirmed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+}
+
+model FileAsset {
+  id          String   @id @default(cuid())
+  analysisId String
+  type        String
+  fileName    String
+  mimeType    String
+  path        String
+  size        Int
+  createdAt   DateTime @default(now())
+
+  analysis    Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+}
+
+model PdfExport {
+  id          String   @id @default(cuid())
+  analysisId String
+  fileName    String
+  path        String
+  createdAt   DateTime @default(now())
+
+  analysis    Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+}

@@ -1,0 +1,64 @@
+
+
+RESUMO
+EXPERIÊNCIA PROFISSIONAL
+FORMAÇÃO
+CURSOS E
+CERTIFICAÇÕES
+HABILIDADES
+mattheus.n.luz24@gmail.com
+Matheus Luz
+Desenvolvedor  Full  Stack  com  experiência  na  modernização  de  sistemas  legados  com  PHP
+(Laravel/Symfony) e na construção de APIs RESTful escaláveis. Proficiente no desenvolvimento
+de interfaces web responsivas com React.js. Tenho um perfil orientado a soluções, transformando
+designs do Figma em experiências de usuário de alta qualidade e otimizando fluxos de trabalho
+com metodologias ágeis e Git.
+Estagiário de Desenvolvimento | 2023-setembro 2024
+ 
+Auxiliei na implementação do tailwindcss para
+melhorar o layout dos sistemas;
+Dei suporte na manutenção de endpoints da API
+RESTful em PHP, corrigindo bugs e garantindo a
+estabilidade.
+Criação de UI dentro do Figma.
+Assessor analista | 2024 - atualmente
+Liderei a modernização de sistemas legados para
+PHP (Symfony/Laravel), resultando em melhorias
+significativas de desempenho e escalabilidade.
+Desenvolvi APIs RESTful para integrar aplicações
+internas e serviços externos, e gerenciei a integração
+com o Portal de Transparência do TCU.
+Criei interfaces de usuário responsivas com React.js
+e aplicativos móveis (iOS/Android) com React
+Native, a partir de protótipos de UI/UX desenhados
+no Figma.
+Gerenciei o ciclo de vida do desenvolvimento com
+Git, metodologias ágeis (Kanban) e gestão de
+chamados/incidentes via GLPI.
+Conduzi migrações de dados entre sistemas e
+realizei a configuração de servidores (Nginx) e de
+MDM (Urmobo).
+Sistemas de Informação
+2024-2025
+Backend: PHP 7.4 | 8.2, Laravel, Symfony,
+Doctrine, SQL
+Frontend: React, JavaScript, TypeScript
+Ferramentas e Metodologias: Git, Kanban,
+GLPI, Nginx
+Curso de Web Design
+2018 – 2020
+Formação A partir do zero: HTML e CSS
+para projetos web
+Formação Desenvolva aplicações Web
+Acessíveis
+Formação Desenvolva aplicações Web
+com JavaScript
+Symfony e Doctrine
+JavaScript com foco em Back-end
+Explore React com JavaScript
+Coren-Sp
+Coren-SC
+FAM
+Escola Saga
+Alura
+(11) 99581-7335
