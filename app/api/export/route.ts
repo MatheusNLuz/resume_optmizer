@@ -32,12 +32,13 @@ export async function POST(req: Request) {
       executablePath = await chromium.executablePath();
     }
 
+    const browserArgs = isLocal ? puppeteer.defaultArgs() : (await chromium.args) as string[];
+
     const browser = await puppeteer.launch({
-      args: isLocal ? puppeteer.defaultArgs() : chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      args: browserArgs as any,
+      defaultViewport: { width: 1920, height: 1080 },
       executablePath: executablePath || undefined,
-      headless: isLocal ? true : chromium.headless,
-      ignoreHTTPSErrors: true,
+      headless: true,
     });
     
     const page = await browser.newPage();
