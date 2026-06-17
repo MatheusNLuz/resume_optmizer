@@ -7,6 +7,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
     EDUCATION: isPT ? "EDUCAÇÃO" : "EDUCATION",
     CERTIFICATIONS: isPT ? "CERTIFICAÇÕES" : "CERTIFICATIONS"
   };
+
   const getContactItems = () => {
     const items = [];
     const loc = resume.personalInfo?.location || resume.contact?.location;
@@ -25,7 +26,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
   const contactItems = getContactItems();
 
   return (
-    <div className={`mx-auto bg-white text-[#334155] font-sans ${isExport ? 'w-full px-8 py-6' : 'max-w-[21cm] p-6 shadow-lg border border-gray-100'}`}>
+    <div className={`mx-auto bg-white text-[#334155] font-sans ${isExport ? 'w-full px-10 py-10' : 'max-w-[21cm] p-10 shadow-lg border border-gray-100'}`}>
       <style dangerouslySetInnerHTML={{__html: `
         @page { margin: 0; }
         @media print {
@@ -33,14 +34,16 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
         }
       `}} />
       
-      {/* Header */}
-      <div className="mb-2.5 border-b border-indigo-100 pb-2.5">
-        <h1 className="text-2xl font-heading font-semibold text-slate-900 tracking-tight mb-1">{resume.personalInfo?.name || resume.contact?.fullName}</h1>
-        <div className="text-[12px] text-[#64748b] flex flex-wrap items-center">
+      {/* Header Full Width */}
+      <header className="mb-6 border-b-2 border-indigo-100 pb-5">
+        <h1 className="text-[32px] font-bold text-[#0f172a] tracking-tight mb-2 leading-none">
+          {resume.personalInfo?.name || resume.contact?.fullName}
+        </h1>
+        <div className="text-[13px] text-[#64748b] flex flex-wrap items-center gap-y-1">
           {contactItems.map((item, index) => (
-            <span key={index} className="whitespace-nowrap">
+            <span key={index} className="flex items-center">
               {item.url ? (
-                <a href={item.url} target="_blank" rel="noreferrer" className="text-slate-700 hover:text-indigo-600 transition-colors">{item.label}</a>
+                <a href={item.url} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-indigo-600 transition-colors">{item.label}</a>
               ) : (
                 item.label
               )}
@@ -48,102 +51,113 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
             </span>
           ))}
         </div>
+      </header>
+
+      {/* Two Column Layout */}
+      <div className="flex flex-col md:flex-row gap-8">
+        
+        {/* LEFT COLUMN: Summary & Experience (Wider) */}
+        <div className="w-full md:w-[65%] space-y-6">
+          {/* Summary */}
+          {(resume.professionalSummary || resume.summary) && (
+            <section>
+              <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] mb-2 flex items-center">
+                {H.PROFILE}
+              </h3>
+              <p className="text-[13px] leading-relaxed text-justify text-[#334155]">
+                {resume.professionalSummary || resume.summary}
+              </p>
+            </section>
+          )}
+
+          {/* Experience */}
+          {(resume.experiences || resume.experience) && (resume.experiences || resume.experience).length > 0 && (
+            <section>
+              <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] mb-4 flex items-center">
+                {H.EXPERIENCE}
+              </h3>
+              <div className="space-y-5">
+                {(resume.experiences || resume.experience).map((exp: any, i: number) => (
+                  <div key={i} className="break-inside-avoid">
+                    <div className="flex justify-between items-baseline mb-0.5">
+                      <h4 className="font-bold text-[14px] text-[#0f172a]">{exp.title}</h4>
+                      <span className="text-[12px] font-medium text-[#64748b] whitespace-nowrap ml-2">
+                        {exp.startDate} – {exp.endDate || (isPT ? 'Atualmente' : 'Present')}
+                      </span>
+                    </div>
+                    <div className="text-[13px] text-[#475569] font-medium mb-1.5">
+                      {exp.company}{exp.location ? ` • ${exp.location}` : ""}
+                    </div>
+                    <ul className="list-disc pl-4 text-[13px] space-y-1 text-[#334155] marker:text-[#94a3b8]">
+                      {(exp.description || exp.bullets || []).map((desc: string, j: number) => (
+                        <li key={j} className="pl-1 leading-relaxed">{desc}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* RIGHT COLUMN: Skills, Education & Certifications (Narrower) */}
+        <div className="w-full md:w-[35%] space-y-6">
+          
+          {/* Skills */}
+          {resume.skills && resume.skills.length > 0 && (
+            <section className="break-inside-avoid">
+              <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] mb-3">
+                {H.SKILLS}
+              </h3>
+              <div className="flex flex-col gap-3 text-[13px] text-[#334155]">
+                {resume.skills.map((skillGroup: any, i: number) => (
+                  <div key={i}>
+                    <div className="font-bold text-[#0f172a] mb-0.5">{skillGroup.category || skillGroup.group}</div>
+                    <div className="text-[#475569] leading-snug">{skillGroup.items.join(", ")}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Education */}
+          {resume.education && resume.education.length > 0 && (
+            <section className="break-inside-avoid">
+              <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] mb-3">
+                {H.EDUCATION}
+              </h3>
+              <div className="space-y-4">
+                {resume.education.map((edu: any, i: number) => (
+                  <div key={i}>
+                    <h4 className="font-bold text-[13px] text-[#0f172a] leading-tight">{edu.institution}</h4>
+                    <div className="text-[13px] text-[#475569] mt-0.5 mb-1 leading-snug">{edu.degree}</div>
+                    <div className="text-[12px] text-[#64748b]">{edu.startDate} – {edu.endDate}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Certifications */}
+          {resume.certifications && resume.certifications.length > 0 && (
+            <section className="break-inside-avoid">
+              <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] mb-3">
+                {H.CERTIFICATIONS}
+              </h3>
+              <div className="space-y-3">
+                {resume.certifications.map((cert: any, i: number) => (
+                  <div key={i} className="text-[13px]">
+                    <div className="font-bold text-[#0f172a] leading-tight">{cert.name}</div>
+                    {cert.issuer && <div className="text-[#475569] mt-0.5">{cert.issuer}</div>}
+                    <div className="text-[12px] text-[#64748b] mt-0.5">{cert.date}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+        </div>
       </div>
-
-      {/* Summary */}
-      {(resume.professionalSummary || resume.summary) && (
-        <section className="mb-3">
-          <h3 className="text-[11.5px] font-bold uppercase tracking-widest text-[#4F46E5] mb-1.5">{H.PROFILE}</h3>
-          <p className="text-[12px] leading-relaxed text-justify text-[#334155]">
-            {resume.professionalSummary || resume.summary}
-          </p>
-        </section>
-      )}
-
-      {/* Experience */}
-      {(resume.experiences || resume.experience) && (resume.experiences || resume.experience).length > 0 && (
-        <section className="mb-3">
-          <h3 className="text-[11.5px] font-bold uppercase tracking-widest text-[#4F46E5] mb-2">
-            {H.EXPERIENCE}
-          </h3>
-          <div className="space-y-3">
-            {(resume.experiences || resume.experience).map((exp: any, i: number) => (
-              <div key={i} className="break-inside-avoid mb-1.5">
-                <div className="flex justify-between items-baseline mb-0.5">
-                  <h4 className="font-bold text-[13px] text-[#0f172a]">{exp.title}</h4>
-                  <span className="text-[12px] text-[#64748b]">
-                    {exp.startDate} – {exp.endDate || (isPT ? 'Atualmente' : 'Present')}
-                  </span>
-                </div>
-                <div className="text-[12px] text-[#475569] mb-1">
-                  {exp.company}{exp.location ? ` • ${exp.location}` : ""}
-                </div>
-                <ul className="list-disc pl-4 text-[12px] space-y-0.5 text-[#334155] marker:text-[#94a3b8]">
-                  {(exp.description || exp.bullets || []).map((desc: string, j: number) => (
-                    <li key={j} className="pl-1 leading-relaxed">{desc}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Skills */}
-      {resume.skills && resume.skills.length > 0 && (
-        <section className="mb-3 break-inside-avoid">
-          <h3 className="text-[11.5px] font-bold uppercase tracking-widest text-[#4F46E5] mb-1.5">
-            {H.SKILLS}
-          </h3>
-          <div className="text-[12px] grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-[#334155]">
-            {resume.skills.map((skillGroup: any, i: number) => (
-              <div key={i} className="break-inside-avoid">
-                <span className="font-bold text-slate-800">{skillGroup.category || skillGroup.group}:</span> <span className="text-slate-600">{skillGroup.items.join(", ")}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Education */}
-      {resume.education && resume.education.length > 0 && (
-        <section className="mb-3 break-inside-avoid">
-          <h3 className="text-[11.5px] font-bold uppercase tracking-widest text-[#4F46E5] mb-1.5">
-            {H.EDUCATION}
-          </h3>
-          <div className="space-y-2">
-            {resume.education.map((edu: any, i: number) => (
-              <div key={i} className="flex justify-between items-baseline">
-                <div>
-                  <h4 className="font-bold text-[13px] text-[#0f172a]">{edu.institution}</h4>
-                  <div className="text-[12px] text-[#475569] mt-0.5">{edu.degree}</div>
-                </div>
-                <span className="text-[12px] text-[#64748b] whitespace-nowrap ml-4">{edu.startDate} – {edu.endDate}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Certifications */}
-      {resume.certifications && resume.certifications.length > 0 && (
-        <section className="break-inside-avoid">
-          <h3 className="text-[11.5px] font-bold uppercase tracking-widest text-[#4F46E5] mb-1.5">
-            {H.CERTIFICATIONS}
-          </h3>
-          <div className="space-y-1.5">
-            {resume.certifications.map((cert: any, i: number) => (
-              <div key={i} className="flex justify-between items-baseline text-[12px]">
-                <div className="text-[#0f172a]">
-                  <span className="font-bold">{cert.name}</span>
-                  {cert.issuer && <span className="text-[#475569] font-normal"> • {cert.issuer}</span>}
-                </div>
-                <span className="text-[#64748b] whitespace-nowrap ml-4">{cert.date}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
