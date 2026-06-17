@@ -36,7 +36,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
       `}} />
       
       {/* Header */}
-      <header className="mb-4">
+      <div className="mb-4">
         <h1 className="text-[36px] font-bold text-[#0f172a] tracking-tight leading-none mb-3">
           {resume.personalInfo?.name || resume.contact?.fullName}
         </h1>
@@ -53,7 +53,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
             </span>
           ))}
         </div>
-      </header>
+      </div>
 
       <hr className="border-t-[1px] border-[#c7d2fe] mb-6" />
 
