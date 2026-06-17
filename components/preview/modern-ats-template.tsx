@@ -59,7 +59,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
 
       {/* Summary */}
       {(resume.professionalSummary || resume.summary) && (
-        <section className="mb-6 break-inside-avoid">
+        <section className="mb-6">
           <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] jg-accent mb-3">
             {H.PROFILE}
           </h3>
@@ -77,7 +77,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
           </h3>
           <div className="space-y-5">
             {(resume.experiences || resume.experience).map((exp: any, i: number) => (
-              <div key={i} className="break-inside-avoid">
+              <div key={i}>
                 <div className="flex justify-between items-baseline mb-0.5">
                   <h4 className="font-bold text-[15px] text-[#0f172a]">{exp.title}</h4>
                   <span className="text-[14px] text-[#64748b]">
@@ -100,7 +100,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
 
       {/* Skills */}
       {resume.skills && resume.skills.length > 0 && (
-        <section className="mb-6 break-inside-avoid">
+        <section className="mb-6">
           <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] jg-accent mb-4">
             {H.SKILLS}
           </h3>
@@ -117,13 +117,13 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
 
       {/* Education */}
       {resume.education && resume.education.length > 0 && (
-        <section className="mb-6 break-inside-avoid">
+        <section className="mb-6">
           <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] jg-accent mb-4">
             {H.EDUCATION}
           </h3>
           <div className="space-y-4">
             {resume.education.map((edu: any, i: number) => (
-              <div key={i} className="flex justify-between items-baseline">
+              <div key={i} className="flex justify-between items-baseline break-inside-avoid">
                 <div>
                   <h4 className="font-bold text-[15px] text-[#0f172a]">{edu.institution}</h4>
                   <div className="text-[14px] text-[#475569] mt-0.5">{edu.degree}</div>
@@ -139,13 +139,13 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
 
       {/* Certifications */}
       {resume.certifications && resume.certifications.length > 0 && (
-        <section className="break-inside-avoid">
+        <section>
           <h3 className="text-[13px] font-bold uppercase tracking-widest text-[#4F46E5] jg-accent mb-4">
             {H.CERTIFICATIONS}
           </h3>
           <div className="space-y-3">
             {resume.certifications.map((cert: any, i: number) => (
-              <div key={i} className="flex justify-between items-baseline text-[14px]">
+              <div key={i} className="flex justify-between items-baseline text-[14px] break-inside-avoid">
                 <div className="text-[#0f172a]">
                   <span className="font-bold">{cert.name}</span>
                   {cert.issuer && <span className="text-[#475569] font-normal"> • {cert.issuer}</span>}
