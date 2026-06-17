@@ -27,7 +27,7 @@ export function BasicAtsTemplate({ resume, isExport, language = "en-US" }: { res
   return (
     <div className={`mx-auto bg-white text-black font-sans ${isExport ? 'w-full' : 'max-w-[21cm] p-8 shadow-sm border border-gray-200'}`}>
       <style dangerouslySetInnerHTML={{__html: `
-        ${isExport ? '@page { margin: 1.5cm 2cm; }' : '@page { margin: 0; }'}
+        ${isExport ? '@page { margin: 0.8cm 1.5cm; }' : '@page { margin: 0; }'}
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
