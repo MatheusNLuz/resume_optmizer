@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const page = await browser.newPage();
     
     // Wait for the page to load completely
-    await page.goto(url, { waitUntil: "networkidle0" });
+    await page.goto(url, { waitUntil: "networkidle2" });
 
     // Generate PDF
     const pdfBuffer = await page.pdf({
@@ -72,6 +72,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("PDF export error:", error);
-    return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to generate PDF: " + String((error as any).message || error) }, { status: 500 });
   }
 }
