@@ -25,9 +25,9 @@ export function BasicAtsTemplate({ resume, isExport, language = "en-US" }: { res
   const contactItems = getContactItems();
 
   return (
-    <div className={`mx-auto bg-white text-black font-sans ${isExport ? 'w-full px-10 py-8' : 'max-w-[21cm] p-8 shadow-sm border border-gray-200'}`}>
+    <div className={`mx-auto bg-white text-black font-sans ${isExport ? 'w-full' : 'max-w-[21cm] p-8 shadow-sm border border-gray-200'}`}>
       <style dangerouslySetInnerHTML={{__html: `
-        @page { margin: 0; }
+        ${isExport ? '@page { margin: 1.5cm 2cm; }' : '@page { margin: 0; }'}
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }

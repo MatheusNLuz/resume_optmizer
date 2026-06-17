@@ -26,9 +26,9 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
   const contactItems = getContactItems();
 
   return (
-    <div className={`mx-auto bg-white text-[#334155] font-sans ${isExport ? 'w-full px-12 py-10' : 'max-w-[21cm] p-10 shadow-lg border border-gray-100'}`}>
+    <div className={`mx-auto bg-white text-[#334155] font-sans ${isExport ? 'w-full' : 'max-w-[21cm] p-10 shadow-lg border border-gray-100'}`}>
       <style dangerouslySetInnerHTML={{__html: `
-        @page { margin: 0; }
+        ${isExport ? '@page { margin: 1.5cm 2cm; }' : '@page { margin: 0; }'}
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .jg-accent { color: #4F46E5 !important; }
