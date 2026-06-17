@@ -32,10 +32,10 @@ export async function POST(req: Request) {
       executablePath = await chromium.executablePath();
     }
 
-    const browserArgs = isLocal ? puppeteer.defaultArgs() : (await chromium.args) as string[];
+    const browserArgs = isLocal ? ["--no-sandbox", "--disable-setuid-sandbox"] : (await chromium.args) as string[];
 
     const browser = await puppeteer.launch({
-      args: browserArgs as any,
+      args: browserArgs,
       defaultViewport: { width: 1920, height: 1080 },
       executablePath: executablePath || undefined,
       headless: true,
