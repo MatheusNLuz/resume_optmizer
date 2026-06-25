@@ -56,6 +56,26 @@ If the 'Previous Answers History' provided in the payload contains information t
 
 CRITICAL: Generate everything in Portuguese (pt-BR).`;
 
+const QUESTIONS_LINKEDIN_PROMPT = `You are an expert LinkedIn Profile optimizer and technical recruiter.
+Based on the parsed LinkedIn profile text, generate 3-5 smart questions to help the user optimize their profile for recruiter search results.
+CRITICAL INSTRUCTION: AT LEAST 2 QUESTIONS MUST BE STRICTLY QUANTITATIVE. You must ask for real metrics, numbers, percentages, or achievements for their experiences to replace any draft/hallucinated placeholders.
+(e.g., "Qual foi o impacto percentual na melhoria de performance no cargo X?", "Quantas pessoas faziam parte da equipe?", "Quantos sistemas legados você migrou?").
+
+{
+  "questions": [
+    {
+      "question": "string",
+      "reason": "string",
+      "category": "experience" | "skill" | "education",
+      "answerType": "text" | "boolean" | "multiple_choice",
+      "options": ["string"] (optional),
+      "suggestedAnswer": "string" (optional - ONLY if candidate's history contains the answer)
+    }
+  ]
+}
+
+CRITICAL: Generate everything in Portuguese (pt-BR).`;
+
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
@@ -106,7 +126,10 @@ export async function POST(req: Request) {
     let prompt = "";
     let payload = "";
 
-    if (analysis.comparisonJson) {
+    if (analysis.mode === "LINKEDIN_OPTIMIZATION") {
+      prompt = QUESTIONS_LINKEDIN_PROMPT;
+      payload = `LinkedIn Profile Text:\n${analysis.parsedResumeText}\n\n${historyBlock}`;
+    } else if (analysis.comparisonJson) {
       // Job-specific gaps mode
       prompt = QUESTIONS_WITH_JOB_PROMPT;
       payload = `Resume Text:\n${analysis.parsedResumeText}\n\nGap Analysis:\n${analysis.comparisonJson}\n\n${historyBlock}`;

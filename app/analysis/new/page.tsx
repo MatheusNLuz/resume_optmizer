@@ -11,6 +11,7 @@ const MODE_LABELS: Record<string, string> = {
   MAKE_ATS_FRIENDLY: "Otimização para ATS",
   COMPARE_AGAINST_JOB: "Comparação com a Vaga",
   OPTIMIZE_FOR_JOB: "Otimização Completa",
+  LINKEDIN_OPTIMIZATION: "Otimização de LinkedIn",
 };
 
 const JOB_LOCATIONS = [
@@ -124,14 +125,22 @@ function NewAnalysisContent() {
     <div className="container mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <div className="mb-8">
         <p className="mb-1 text-[12px] font-medium uppercase tracking-wider text-muted-foreground">{MODE_LABELS[mode]}</p>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Envie seu currículo</h1>
-        <p className="mt-1 text-[14px] text-muted-foreground">Vamos extrair o conteúdo e rodar a análise de IA.</p>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+          {mode === "LINKEDIN_OPTIMIZATION" ? "Envie seu perfil do LinkedIn" : "Envie seu currículo"}
+        </h1>
+        <p className="mt-1 text-[14px] text-muted-foreground">
+          {mode === "LINKEDIN_OPTIMIZATION" 
+            ? "Vamos extrair as informações do perfil e analisar o SEO/atratividade para recrutadores."
+            : "Vamos extrair o conteúdo e rodar a análise de IA."}
+        </p>
       </div>
 
       <div className="space-y-6">
         {/* Resume Input */}
         <div className="surface rounded-xl p-5">
-          <h2 className="mb-4 text-[14px] font-semibold">Currículo</h2>
+          <h2 className="mb-4 text-[14px] font-semibold">
+            {mode === "LINKEDIN_OPTIMIZATION" ? "Perfil do LinkedIn" : "Currículo"}
+          </h2>
           <Tabs defaultValue="pdf" className="w-full" onValueChange={setActiveTab}>
             <TabsList className="mb-4 grid w-full grid-cols-2 bg-secondary">
               <TabsTrigger value="pdf" className="text-[13px] data-[state=active]:bg-background"><Upload className="mr-1.5 h-3.5 w-3.5" /> Upload de PDF</TabsTrigger>
@@ -174,7 +183,9 @@ function NewAnalysisContent() {
 
             <TabsContent value="paste">
               <Textarea
-                placeholder="Cole o texto completo do seu currículo..."
+                placeholder={mode === "LINKEDIN_OPTIMIZATION" 
+                  ? "Cole o texto do seu perfil do LinkedIn (Título, Sobre, Experiências)..." 
+                  : "Cole o texto completo do seu currículo..."}
                 className="min-h-[250px] resize-none bg-background text-[13px]"
                 value={pastedText}
                 onChange={(e) => setPastedText(e.target.value)}

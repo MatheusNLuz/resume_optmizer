@@ -37,7 +37,9 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
       const d = await res.json();
       setData(d);
       
-      if (!d.comparisonJson && d.jobDescription) {
+      if (d.mode === "LINKEDIN_OPTIMIZATION") {
+        setActiveTab("questions");
+      } else if (!d.comparisonJson && d.jobDescription) {
         // Needs match
       } else if (!d.questions || d.questions.length === 0) {
         // Generate questions if not exist
@@ -124,9 +126,14 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
       });
       const d = await res.json();
       if (d.success) {
-        toast({ title: "Sucesso", description: "Currículo otimizado!", variant: "success" });
-        fetchData();
-        setActiveTab("preview");
+        if (data.mode === "LINKEDIN_OPTIMIZATION") {
+          toast({ title: "Sucesso", description: "Perfil do LinkedIn otimizado com sucesso!", variant: "success" });
+          router.push(`/analysis/${analysisId}`);
+        } else {
+          toast({ title: "Sucesso", description: "Currículo otimizado!", variant: "success" });
+          fetchData();
+          setActiveTab("preview");
+        }
       }
     } catch (e) {
       toast({ title: "Erro", description: "Falha ao otimizar", variant: "error" });
@@ -195,6 +202,8 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
   const match = data.comparisonJson ? JSON.parse(data.comparisonJson) : null;
   const optimized = data.finalResumeJson ? JSON.parse(data.finalResumeJson) : null;
 
+  const isLinkedIn = data.mode === "LINKEDIN_OPTIMIZATION";
+
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6">
@@ -204,11 +213,65 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
         >
           ← Voltar para o Painel de Resultados
         </button>
-        <h1 className="font-heading text-2xl font-semibold">Editor de Currículo e Otimização</h1>
-        <p className="text-[13px] text-muted-foreground">Responda perguntas, reescreva e exporte o currículo.</p>
+        <h1 className="font-heading text-2xl font-semibold">
+          {isLinkedIn ? "Otimizar Perfil do LinkedIn" : "Editor de Currículo e Otimização"}
+        </h1>
+        <p className="text-[13px] text-muted-foreground">
+          {isLinkedIn 
+            ? "Responda a perguntas estratégicas para gerar dados e métricas reais de performance."
+            : "Responda perguntas, reescreva e exporte o currículo."}
+        </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      {isLinkedIn ? (
+        <div className="space-y-6 animate-fade-in">
+          <div className="surface rounded-xl p-6">
+            <h2 className="text-[16px] font-semibold mb-4">Perguntas Estratégicas (Smart Questions)</h2>
+            <p className="text-[13px] text-muted-foreground mb-6">
+              Responda a estas perguntas sobre suas experiências para que a IA possa gerar descrições e resumos com métricas e dados reais, sem inventar informações.
+            </p>
+            {generatingQuestions ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-4 bg-secondary/30 rounded-lg">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                <div className="text-[14px] font-medium text-indigo-400 animate-pulse text-center">
+                  A IA está analisando seu perfil e gerando perguntas estratégicas...
+                </div>
+              </div>
+            ) : questions.length === 0 ? (
+              <div className="text-[13px] text-muted-foreground">Nenhuma pergunta gerada.</div>
+            ) : (
+              <div className="space-y-6">
+                {questions.map((q: any, i: number) => (
+                  <div key={q.id} className="bg-secondary/30 p-4 rounded-lg">
+                    <p className="text-[14px] font-semibold mb-2">{i + 1}. {q.question}</p>
+                    <p className="text-[12px] text-blue-400 mb-3 font-medium">Motivo: {q.reason}</p>
+                    <Textarea 
+                      className="text-[13px] bg-background" 
+                      placeholder="Sua resposta..."
+                      value={answers[q.id] || ""}
+                      onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-6">
+              {!truthGuardData ? (
+                <button onClick={handleTruthGuard} disabled={runningTruthGuard} className="inline-flex items-center rounded-lg bg-blue-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-blue-500 shadow-sm cursor-pointer">
+                  {runningTruthGuard ? <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> Verificando Integridade...</> : <>Validar Fatos & Otimizar Perfil <ArrowRight className="ml-2 h-3.5 w-3.5" /></>}
+                </button>
+              ) : (
+                <TruthGuardPanel 
+                  truthGuardData={truthGuardData} 
+                  onApprove={handleOptimize} 
+                  onEditAnswers={() => setTruthGuardData(null)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-6 bg-secondary flex overflow-x-auto">
           {match && <TabsTrigger value="match" className="text-[13px]"><Briefcase className="mr-2 h-3.5 w-3.5" /> Compatibilidade com a Vaga</TabsTrigger>}
           <TabsTrigger value="questions" className="text-[13px]"><HelpCircle className="mr-2 h-3.5 w-3.5" /> Smart Questions</TabsTrigger>
@@ -365,6 +428,7 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
           </div>
         </TabsContent>
       </Tabs>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, AlertCircle, CheckCircle2, ArrowRight, ShieldAlert, BarChart3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/custom-toast";
+import { LinkedInDashboard } from "@/components/analysis/linkedin-dashboard";
 
 interface Props { analysisId: string; }
 
@@ -84,6 +85,17 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
   const gamification = parse(analysisData.gamificationJson);
   const scores = parse(analysisData.initialScores);
   const finalScores = parse(analysisData.finalScores);
+
+  if (analysisData.mode === "LINKEDIN_OPTIMIZATION") {
+    return (
+      <LinkedInDashboard 
+        analysis={analysis} 
+        scores={scores} 
+        gamification={gamification} 
+        analysisId={analysisId} 
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-8 sm:px-6 space-y-6">

@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { ConsensusEngine } from "@/lib/ai/consensus-engine";
-import { ATS_ANALYZER_SYSTEM_PROMPT, generateAtsAnalyzerUserPrompt } from "@/lib/ai/prompts";
-import { ResumeAnalysis, ResumeAnalysisSchema } from "@/lib/schemas/analysis.schema";
+import { 
+  ATS_ANALYZER_SYSTEM_PROMPT, 
+  generateAtsAnalyzerUserPrompt,
+  LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+  generateLinkedInAnalyzerUserPrompt 
+} from "@/lib/ai/prompts";
+import { 
+  ResumeAnalysis, 
+  ResumeAnalysisSchema,
+  LinkedInAnalysisSchema 
+} from "@/lib/schemas/analysis.schema";
 import { ScoreEngine } from "@/lib/ats/score-engine";
 import { GamificationEngine } from "@/lib/gamification/gamification-engine";
 
@@ -27,7 +36,65 @@ export async function POST(req: Request) {
 
     const engine = new ConsensusEngine();
     
-    // Generate AI Analysis using Consensus
+    if (analysisRecord.mode === "LINKEDIN_OPTIMIZATION") {
+      // Generate LinkedIn Analysis using Consensus
+      const rawAnalysis = await engine.analyzeWithConsensus<any>(
+        LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+        generateLinkedInAnalyzerUserPrompt(
+          analysisRecord.parsedResumeText,
+          analysisRecord.professionalTarget || "General",
+          analysisRecord.selectedLanguage
+        )
+      );
+
+      const validatedAnalysis = LinkedInAnalysisSchema.parse(rawAnalysis);
+
+      // Custom simple gamification for LinkedIn
+      const overall = validatedAnalysis.scores.overall;
+      let level = 1;
+      let levelName = "Perfil Básico";
+      if (overall >= 90) {
+        level = 5;
+        levelName = "Pronto para Recrutadores";
+      } else if (overall >= 75) {
+        level = 4;
+        levelName = "Perfil Altamente Competitivo";
+      } else if (overall >= 60) {
+        level = 3;
+        levelName = "Perfil Otimizado";
+      } else if (overall >= 40) {
+        level = 2;
+        levelName = "Perfil Estruturado";
+      }
+
+      const gamification = {
+        level,
+        levelName,
+        missionsComplete: overall >= 90 ? 4 : overall >= 75 ? 3 : overall >= 50 ? 2 : 1,
+        totalMissions: 4,
+        badges: overall >= 80 ? ["LinkedIn Star", "SEO Master"] : ["LinkedIn Basic"],
+      };
+
+      // Save back to database
+      await prisma.analysis.update({
+        where: { id: analysisId },
+        data: {
+          analysisJson: JSON.stringify(validatedAnalysis),
+          initialScores: JSON.stringify(validatedAnalysis.scores),
+          gamificationJson: JSON.stringify(gamification),
+          selectedLanguage: validatedAnalysis.recommendedLanguage || analysisRecord.selectedLanguage,
+        }
+      });
+
+      return NextResponse.json({
+        success: true,
+        analysis: validatedAnalysis,
+        scores: validatedAnalysis.scores,
+        gamification
+      });
+    }
+
+    // Default ATS Resume Analysis workflow
     const rawAnalysis = await engine.analyzeWithConsensus<ResumeAnalysis>(
       ATS_ANALYZER_SYSTEM_PROMPT,
       generateAtsAnalyzerUserPrompt(
@@ -49,7 +116,7 @@ export async function POST(req: Request) {
     const gamification = GamificationEngine.evaluate(validatedAnalysis);
 
     // Save back to database
-    const updatedRecord = await prisma.analysis.update({
+    await prisma.analysis.update({
       where: { id: analysisId },
       data: {
         analysisJson: JSON.stringify(validatedAnalysis),

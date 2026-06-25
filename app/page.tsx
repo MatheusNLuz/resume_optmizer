@@ -1,6 +1,22 @@
 import Link from "next/link";
 import { ArrowRight, FileCheck2, Scale, Zap, Upload, Brain, Download } from "lucide-react";
 
+const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
 const modes = [
   {
     href: "/analysis/new?mode=MAKE_ATS_FRIENDLY",
@@ -29,6 +45,15 @@ const modes = [
     accent: "text-amber-400",
     iconBg: "bg-amber-500/10",
   },
+  {
+    href: "/analysis/new?mode=LINKEDIN_OPTIMIZATION",
+    icon: LinkedinIcon,
+    title: "Otimizar LinkedIn",
+    description: "Analise o SEO do seu perfil do LinkedIn e melhore sua atratividade para recrutadores.",
+    cta: "Otimizar Perfil",
+    accent: "text-blue-400",
+    iconBg: "bg-blue-500/10",
+  },
 ];
 
 const steps = [
@@ -52,7 +77,7 @@ export default function Home() {
       </div>
 
       {/* Mode Cards */}
-      <div className="grid gap-3 sm:grid-cols-3 mb-20">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-20">
         {modes.map((mode) => (
           <Link key={mode.href} href={mode.href} className="group">
             <div className="surface surface-hover rounded-xl p-5 transition-all duration-150 hover:shadow-sm h-full flex flex-col">

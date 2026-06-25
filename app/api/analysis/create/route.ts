@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -10,9 +11,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Mode is required" }, { status: 400 });
     }
 
+    const session = await getSessionUser();
+    const userId = session?.userId || null;
+
     // Create the analysis record
     const analysis = await prisma.analysis.create({
       data: {
+        userId,
         mode,
         selectedLanguage: selectedLanguage || "unknown",
         selectedTemplate: "basic-ats",

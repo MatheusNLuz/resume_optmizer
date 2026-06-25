@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { AnalysisOrchestrator } from "@/lib/ai/analysis-orchestrator";
 import { OptimizedResumeSchema, OptimizedResume } from "@/lib/schemas/optimize.schema";
+import { LINKEDIN_ANALYZER_SYSTEM_PROMPT } from "@/lib/ai/prompts";
 
 export const maxDuration = 60;
 
@@ -67,6 +68,41 @@ export async function POST(req: Request) {
     });
 
     if (!analysis) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    if (analysis.mode === "LINKEDIN_OPTIMIZATION") {
+      const answersText = analysis.questions
+        .filter(q => q.answer)
+        .map(q => `Q: ${q.question}\nA: ${q.answer}`)
+        .join("\n");
+      
+      const payload = `Original LinkedIn Profile Content:\n${analysis.parsedResumeText}
+      
+Candidate's Answers to Smart Questions (Use these to fill in metrics and numbers. DO NOT INVENT any metric not answered here!):
+${answersText || "Nenhuma resposta fornecida."}`;
+
+      const orchestrator = new AnalysisOrchestrator();
+      
+      // Import dynamic schema to parse
+      const { LinkedInAnalysisSchema } = require("@/lib/schemas/analysis.schema");
+      
+      const rawOptimize = await orchestrator.analyze<any>(
+        LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+        payload
+      );
+      
+      const validated = LinkedInAnalysisSchema.parse(rawOptimize);
+
+      await prisma.analysis.update({
+        where: { id: analysisId },
+        data: { 
+          analysisJson: JSON.stringify(validated),
+          finalScores: JSON.stringify(validated.scores),
+          finalResumeJson: JSON.stringify(validated)
+        }
+      });
+
+      return NextResponse.json({ success: true, optimized: validated, finalScores: validated.scores });
+    }
 
     const answersText = analysis.questions.filter(q => q.answer).map(q => `Q: ${q.question}\nA: ${q.answer}`).join("\n");
 

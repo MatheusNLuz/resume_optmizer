@@ -3,6 +3,8 @@ import { Clock, ArrowRight, FileText, Plus, Scale, Zap, FileCheck2 } from "lucid
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 
+import { getSessionUser } from "@/lib/auth";
+
 export const dynamic = "force-dynamic";
 
 const MODE_ICONS: Record<string, any> = {
@@ -12,7 +14,11 @@ const MODE_ICONS: Record<string, any> = {
 };
 
 export default async function HistoryPage() {
+  const session = await getSessionUser();
+  const userId = session?.userId || null;
+
   const history = await prisma.analysis.findMany({
+    where: { userId },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,

@@ -37,3 +37,35 @@ export const ResumeAnalysisSchema = z.object({
 });
 
 export type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
+
+export const LinkedInAnalysisSchema = z.object({
+  detectedLanguage: z.enum(["pt-BR", "en-US", "unknown"]).catch("unknown"),
+  recommendedLanguage: z.enum(["pt-BR", "en-US"]).catch("pt-BR"),
+  detectedSeniority: z.enum(["junior", "mid", "senior", "lead", "unknown"]).catch("unknown"),
+  strengths: z.array(z.string()).default([]),
+  weaknesses: z.array(z.string()).default([]),
+  headlineSuggestions: z.array(z.string()).default([]),
+  summarySuggestion: z.string().default(""),
+  seoKeywords: z.array(z.string()).default([]),
+  experienceTips: z.array(z.object({
+    role: z.string(),
+    company: z.string(),
+    tips: z.array(z.string()),
+    optimizedBullets: z.array(z.string()),
+  })).default([]),
+  atsIssues: z.array(z.object({
+    type: z.string(),
+    severity: z.enum(["low", "medium", "high"]).catch("low"),
+    description: z.string(),
+    recommendation: z.string(),
+  })).default([]),
+  scores: z.object({
+    overall: z.number().default(0),
+    headline: z.number().default(0),
+    summary: z.number().default(0),
+    experiences: z.number().default(0),
+    seo: z.number().default(0),
+  }),
+});
+
+export type LinkedInAnalysis = z.infer<typeof LinkedInAnalysisSchema>;
