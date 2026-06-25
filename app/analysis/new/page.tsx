@@ -24,6 +24,11 @@ const JOB_LOCATIONS = [
   { value: "REMOTE", label: "🌍 Remoto (Internacional)", lang: "en-US", format: "International remote format (EN-US)" },
 ];
 
+const LANGUAGES = [
+  { value: "pt-BR", label: "🇧🇷 Português (Brasil)", format: "Sugestões em PT-BR" },
+  { value: "en-US", label: "🇺🇸 Inglês (EUA)", format: "Suggestions in EN-US" },
+];
+
 function NewAnalysisContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,6 +43,7 @@ function NewAnalysisContent() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("pdf");
   const [dragActive, setDragActive] = useState(false);
+  const [linkedInLanguage, setLinkedInLanguage] = useState("pt-BR");
 
   const selectedLocation = JOB_LOCATIONS.find(l => l.value === jobLocation);
 
@@ -62,7 +68,7 @@ function NewAnalysisContent() {
   const handleContinue = async () => {
     setLoading(true);
     try {
-      const selectedLang = selectedLocation?.lang || "pt-BR";
+      const selectedLang = mode === "LINKEDIN_OPTIMIZATION" ? linkedInLanguage : (selectedLocation?.lang || "pt-BR");
       
       const analysisRes = await fetch("/api/analysis/create", {
         method: "POST",
@@ -242,6 +248,34 @@ function NewAnalysisContent() {
             {!jobLocation && (
               <p className="mt-3 text-[11px] text-amber-400">Selecione a localização da vaga para continuar</p>
             )}
+          </div>
+        )}
+        {/* LinkedIn Language Selection */}
+        {mode === "LINKEDIN_OPTIMIZATION" && (
+          <div className="surface rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className="h-4 w-4 text-indigo-400" />
+              <h2 className="text-[14px] font-semibold">Qual o idioma do perfil?</h2>
+            </div>
+            <p className="mb-4 text-[13px] text-muted-foreground">
+              Selecione o idioma em que deseja que a IA avalie e gere o texto otimizado (Headline, Resumo e Experiências) para o seu LinkedIn.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.value}
+                  onClick={() => setLinkedInLanguage(lang.value)}
+                  className={`rounded-lg border px-3 py-2.5 text-left transition-all text-[13px] ${
+                    linkedInLanguage === lang.value
+                      ? "border-indigo-500 bg-indigo-500/10 text-foreground"
+                      : "border-border bg-secondary/30 text-muted-foreground hover:border-muted-foreground/40 hover:text-foreground"
+                  }`}
+                >
+                  <div className="font-medium">{lang.label}</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5">{lang.format}</div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

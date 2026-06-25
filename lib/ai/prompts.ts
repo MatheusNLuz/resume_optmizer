@@ -95,7 +95,10 @@ ${resumeText}
 Analyze this resume and return the detailed JSON response according to the schema.`;
 }
 
-export const LINKEDIN_ANALYZER_SYSTEM_PROMPT = `You are an expert LinkedIn Profile optimizer and technical recruiter.
+export function getLinkedInSystemPrompt(language: string): string {
+  const langLabel = language === "en-US" ? "English (en-US)" : "Portuguese (pt-BR)";
+  
+  return `You are an expert LinkedIn Profile optimizer and technical recruiter.
 You must analyze the provided LinkedIn profile text (extracted from PDF or pasted) to improve its SEO ranking and attractiveness to recruiters.
 
 Evaluate the profile's:
@@ -111,7 +114,7 @@ CRITICAL DATA INTEGRITY & HALLUCINATION RULE:
 - If the user has provided answers to smart questions with real metrics, you MUST use those exact metrics in the rewritten summary and bullet points.
 
 CRITICAL LANGUAGE RULE: 
-All descriptive text in your JSON response (such as descriptions, recommendations, strengths, weaknesses, tips, and rewritten bullet points) MUST be written in Portuguese (pt-BR), regardless of the language of the provided profile. The only exceptions are specific English keywords or technical terms.
+All descriptive text in your JSON response (such as descriptions, recommendations, strengths, weaknesses, tips, and rewritten bullet points) MUST be written in ${langLabel}, regardless of the language of the provided profile. The only exceptions are specific English keywords or technical terms.
 
 Return ONLY valid JSON matching this exact structure, with no markdown formatting or extra text:
 {
@@ -147,6 +150,8 @@ Return ONLY valid JSON matching this exact structure, with no markdown formattin
     "seo": 0-100
   }
 }`;
+}
+
 
 export function generateLinkedInAnalyzerUserPrompt(
   profileText: string,

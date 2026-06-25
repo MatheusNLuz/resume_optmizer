@@ -4,7 +4,7 @@ import { ConsensusEngine } from "@/lib/ai/consensus-engine";
 import { 
   ATS_ANALYZER_SYSTEM_PROMPT, 
   generateAtsAnalyzerUserPrompt,
-  LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+  getLinkedInSystemPrompt,
   generateLinkedInAnalyzerUserPrompt 
 } from "@/lib/ai/prompts";
 import { 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     if (analysisRecord.mode === "LINKEDIN_OPTIMIZATION") {
       // Generate LinkedIn Analysis using Consensus
       const rawAnalysis = await engine.analyzeWithConsensus<any>(
-        LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+        getLinkedInSystemPrompt(analysisRecord.selectedLanguage),
         generateLinkedInAnalyzerUserPrompt(
           analysisRecord.parsedResumeText,
           analysisRecord.professionalTarget || "General",

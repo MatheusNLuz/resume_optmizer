@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { AnalysisOrchestrator } from "@/lib/ai/analysis-orchestrator";
 import { OptimizedResumeSchema, OptimizedResume } from "@/lib/schemas/optimize.schema";
-import { LINKEDIN_ANALYZER_SYSTEM_PROMPT } from "@/lib/ai/prompts";
+import { getLinkedInSystemPrompt } from "@/lib/ai/prompts";
 
 export const maxDuration = 60;
 
@@ -86,7 +86,7 @@ ${answersText || "Nenhuma resposta fornecida."}`;
       const { LinkedInAnalysisSchema } = require("@/lib/schemas/analysis.schema");
       
       const rawOptimize = await orchestrator.analyze<any>(
-        LINKEDIN_ANALYZER_SYSTEM_PROMPT,
+        getLinkedInSystemPrompt(analysis.selectedLanguage),
         payload
       );
       
