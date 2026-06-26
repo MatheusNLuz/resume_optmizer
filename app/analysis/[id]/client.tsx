@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, AlertCircle, CheckCircle2, ArrowRight, ShieldAlert, BarChart3 } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, ArrowRight, ShieldAlert, BarChart3, Download, RefreshCw, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/custom-toast";
 import { LinkedInDashboard } from "@/components/analysis/linkedin-dashboard";
@@ -16,6 +16,47 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
   const [step, setStep] = useState("Loading...");
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [exportingPdf, setExportingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    setExportingPdf(true);
+    try {
+      const res = await fetch("/api/export", {
+        method: "POST",
+        body: JSON.stringify({ analysisId }),
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error("Falha ao gerar PDF");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Resume_${analysisId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast({ title: "PDF baixado!", description: "O currículo otimizado foi baixado com sucesso.", variant: "success" });
+    } catch (err: any) {
+      toast({ title: "Erro ao exportar", description: err.message, variant: "error" });
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
+  const handleDownloadCoverLetter = () => {
+    if (!analysisData?.coverLetter) return;
+    const blob = new Blob([analysisData.coverLetter], { type: "text/plain;charset=utf-8" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `CoverLetter_${analysisId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast({ title: "Carta baixada!", description: "Sua carta de apresentação foi baixada.", variant: "success" });
+  };
 
 // Translated lines only
   const runAnalysis = async () => {
@@ -378,13 +419,40 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
         </div>
       </div>
 
-      <div className="flex justify-center pt-6 border-t border-border">
-        <button
-          onClick={() => router.push(`/analysis/${analysisId}/editor`)}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-indigo-500 transition-colors"
-        >
-          Corrigir e Otimizar Currículo <ArrowRight className="h-4 w-4" />
-        </button>
+      <div className="flex flex-wrap justify-center gap-3 pt-6 border-t border-border">
+        {finalScores ? (
+          <>
+            <button
+              onClick={handleExportPdf}
+              disabled={exportingPdf}
+              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-indigo-500 transition-colors disabled:opacity-50"
+            >
+              {exportingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              Baixar PDF
+            </button>
+            {analysisData?.coverLetter && (
+              <button
+                onClick={handleDownloadCoverLetter}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-emerald-500 transition-colors"
+              >
+                <FileText className="h-4 w-4" /> Baixar Carta de Apresentação
+              </button>
+            )}
+            <button
+              onClick={() => router.push(`/analysis/${analysisId}/editor`)}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-secondary px-6 py-3 text-[14px] font-medium text-foreground hover:bg-secondary/80 transition-colors"
+            >
+              <RefreshCw className="h-4 w-4" /> Otimizar Novamente
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => router.push(`/analysis/${analysisId}/editor`)}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-indigo-500 transition-colors"
+          >
+            Corrigir e Otimizar Currículo <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   );
