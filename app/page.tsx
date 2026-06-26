@@ -54,6 +54,15 @@ const modes = [
     accent: "text-blue-400",
     iconBg: "bg-blue-500/10",
   },
+  {
+    href: "/analysis/new?mode=COVER_LETTER_ONLY",
+    icon: FileCheck2,
+    title: "Carta de Apresentação",
+    description: "Crie uma carta de apresentação sob medida cruzando seu currículo com a descrição da vaga.",
+    cta: "Gerar Carta",
+    accent: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
+  },
 ];
 
 const steps = [

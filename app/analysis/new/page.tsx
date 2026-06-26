@@ -12,6 +12,7 @@ const MODE_LABELS: Record<string, string> = {
   COMPARE_AGAINST_JOB: "Comparação com a Vaga",
   OPTIMIZE_FOR_JOB: "Otimização Completa",
   LINKEDIN_OPTIMIZATION: "Otimização de LinkedIn",
+  COVER_LETTER_ONLY: "Carta de Apresentação",
 };
 
 const JOB_LOCATIONS = [
@@ -34,7 +35,7 @@ function NewAnalysisContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const mode = searchParams.get("mode") || "MAKE_ATS_FRIENDLY";
-  const requiresJob = mode === "COMPARE_AGAINST_JOB" || mode === "OPTIMIZE_FOR_JOB";
+  const requiresJob = mode === "COMPARE_AGAINST_JOB" || mode === "OPTIMIZE_FOR_JOB" || mode === "COVER_LETTER_ONLY";
 
   const [file, setFile] = useState<File | null>(null);
   const [pastedText, setPastedText] = useState("");

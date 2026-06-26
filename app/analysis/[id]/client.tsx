@@ -90,6 +90,21 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
       if (!res.ok) throw new Error("Falha ao carregar registro da análise");
       const record = await res.json();
 
+      if (record.mode === "COVER_LETTER_ONLY") {
+        if (!record.coverLetter) {
+          setStep("Gerando Carta de Apresentação...");
+          const resCl = await fetch(`/api/cover-letter`, {
+            method: "POST", body: JSON.stringify({ analysisId })
+          });
+          if (!resCl.ok) throw new Error("Falha ao gerar carta de apresentação");
+        }
+        setStep("Concluído");
+        const finalRes = await fetch(`/api/analysis/${analysisId}`);
+        setAnalysisData(await finalRes.json());
+        setLoading(false);
+        return;
+      }
+
       if (!record.analysisJson) {
         setStep("Rodando análise de ATS...");
         const r = await fetch("/api/analyze", { method: "POST", body: JSON.stringify({ analysisId }), headers: { "Content-Type": "application/json" } });
@@ -148,6 +163,34 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
   const gamification = parse(analysisData.gamificationJson);
   const scores = parse(analysisData.initialScores);
   const finalScores = parse(analysisData.finalScores);
+
+  if (analysisData.mode === "COVER_LETTER_ONLY") {
+    return (
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="font-heading text-2xl font-semibold">Carta de Apresentação</h1>
+            <p className="text-[13px] text-muted-foreground">Gerada com base no seu currículo e na vaga</p>
+          </div>
+          {analysisData.coverLetter && (
+            <button
+              onClick={handleDownloadCoverLetter}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-[14px] font-medium text-white hover:bg-emerald-500 transition-colors"
+            >
+              <FileText className="h-4 w-4" /> Baixar Carta (.txt)
+            </button>
+          )}
+        </div>
+        <div className="surface rounded-xl p-6">
+           <textarea 
+             className="w-full h-[60vh] bg-transparent resize-none outline-none text-[14px] leading-relaxed text-foreground" 
+             value={analysisData.coverLetter || "Nenhuma carta gerada ainda."}
+             readOnly
+           />
+        </div>
+      </div>
+    );
+  }
 
   if (analysisData.mode === "LINKEDIN_OPTIMIZATION") {
     return (
