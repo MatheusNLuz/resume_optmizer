@@ -20,11 +20,12 @@ export async function POST(req: Request) {
     if (!analysisId) return NextResponse.json({ error: "Analysis ID required" }, { status: 400 });
 
     const analysis = await prisma.analysis.findUnique({ where: { id: analysisId } });
-    if (!analysis || !analysis.finalResumeJson || !analysis.jobDescription) {
-      return NextResponse.json({ error: "Optimized resume and job description required" }, { status: 400 });
+    if (!analysis || (!analysis.finalResumeJson && !analysis.parsedResumeText) || !analysis.jobDescription) {
+      return NextResponse.json({ error: "Resume and job description required" }, { status: 400 });
     }
 
-    const payload = `Optimized Resume:\n${analysis.finalResumeJson}\n\nJob Description:\n${analysis.jobDescription}`;
+    const resumeContent = analysis.finalResumeJson || analysis.parsedResumeText;
+    const payload = `Resume:\n${resumeContent}\n\nJob Description:\n${analysis.jobDescription}`;
 
     const orchestrator = new AnalysisOrchestrator();
     const rawLetter = await orchestrator.analyze<CoverLetterGen>(COVER_LETTER_PROMPT, payload);
