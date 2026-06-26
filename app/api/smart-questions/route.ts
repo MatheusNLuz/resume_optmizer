@@ -107,19 +107,29 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Analysis not found" }, { status: 404 });
     }
 
-    // 2. Fetch past answered questions globally to reuse answers
-    const pastAnsweredQuestions = await prisma.smartQuestion.findMany({
-      where: { answer: { not: null }, analysisId: { not: analysisId } },
-      orderBy: { createdAt: 'desc' },
-      take: 20
-    });
+    // 2. Fetch past answered questions for the SAME USER to reuse answers
+    let pastAnsweredQuestions: any[] = [];
+    if (analysis.userId) {
+      pastAnsweredQuestions = await prisma.smartQuestion.findMany({
+        where: { 
+          answer: { not: null },
+          AND: [{ answer: { not: "" } }],
+          analysisId: { not: analysisId },
+          analysis: { userId: analysis.userId }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 15
+      });
+    }
     
     let historyBlock = "";
     if (pastAnsweredQuestions.length > 0) {
-      historyBlock = "Previous Answers History (Use this to pre-fill 'suggestedAnswer'):\n";
+      historyBlock = "--- PAST KNOWLEDGE BASE FOR THIS CANDIDATE ---\n";
+      historyBlock += "CRITICAL: DO NOT use these past questions/answers as requirements for the current job. The current job requirements are ONLY in the 'Gap Analysis' section. Use this knowledge base EXCLUSIVELY to extract facts about the candidate to pre-fill the 'suggestedAnswer' field for the NEW questions you generate.\n\n";
       pastAnsweredQuestions.forEach(pq => {
-        historyBlock += `Q: ${pq.question}\nA: ${pq.answer}\n\n`;
+        historyBlock += `Past Fact/Answer from Candidate: ${pq.answer}\n(Context of what was asked: ${pq.question})\n\n`;
       });
+      historyBlock += "----------------------------------------------\n";
     }
 
     const orchestrator = new AnalysisOrchestrator();
