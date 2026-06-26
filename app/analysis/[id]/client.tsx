@@ -17,6 +17,7 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [generatingLetter, setGeneratingLetter] = useState(false);
 
   const handleExportPdf = async () => {
     setExportingPdf(true);
@@ -56,6 +57,27 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
     a.remove();
     window.URL.revokeObjectURL(url);
     toast({ title: "Carta baixada!", description: "Sua carta de apresentação foi baixada.", variant: "success" });
+  };
+
+  const handleGenerateCoverLetter = async () => {
+    setGeneratingLetter(true);
+    try {
+      const res = await fetch(`/api/cover-letter`, {
+        method: "POST", body: JSON.stringify({ analysisId })
+      });
+      const d = await res.json();
+      if (d.success) {
+        const finalRes = await fetch(`/api/analysis/${analysisId}`);
+        setAnalysisData(await finalRes.json());
+        toast({ title: "Sucesso", description: "Carta de apresentação gerada com sucesso!", variant: "success" });
+      } else {
+        throw new Error(d.error || "Falha ao gerar");
+      }
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message || "Falha ao gerar carta de apresentação", variant: "error" });
+    } finally {
+      setGeneratingLetter(false);
+    }
   };
 
 // Translated lines only
@@ -430,12 +452,21 @@ export function AnalysisDashboardClient({ analysisId }: Props) {
               {exportingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               Baixar PDF
             </button>
-            {analysisData?.coverLetter && (
+            {analysisData?.coverLetter ? (
               <button
                 onClick={handleDownloadCoverLetter}
                 className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-emerald-500 transition-colors"
               >
                 <FileText className="h-4 w-4" /> Baixar Carta de Apresentação
+              </button>
+            ) : (
+              <button
+                onClick={handleGenerateCoverLetter}
+                disabled={generatingLetter}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-[14px] font-medium text-white hover:bg-emerald-500 transition-colors disabled:opacity-50"
+              >
+                {generatingLetter ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
+                ✨ Gerar Carta de Apresentação
               </button>
             )}
             <button
