@@ -66,7 +66,7 @@ export function BasicAtsTemplate({ resume, isExport, language = "en-US" }: { res
               <div key={i} className="break-inside-avoid mb-2">
                 <div className="flex justify-between items-baseline mb-0.5">
                   <h3 className="font-bold text-[14px] text-gray-950">{exp.title}</h3>
-                  <span className="text-[12px] font-medium text-gray-600">{exp.startDate} – {exp.endDate || 'Present'}</span>
+                  <span className="text-[12px] font-medium text-gray-600">{exp.startDate} – {exp.endDate || (isPT ? 'Presente' : 'Present')}</span>
                 </div>
                 <div className="text-[13px] italic text-gray-750 mb-1.5">{exp.company} {exp.location ? `- ${exp.location}` : ""}</div>
                 <ul className="list-disc pl-5 text-[13px] space-y-0.5 text-gray-800">

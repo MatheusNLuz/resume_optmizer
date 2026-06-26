@@ -1,11 +1,11 @@
 export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { resume: any, isExport: boolean, language?: string }) {
   const isPT = language === "pt-BR";
   const H = {
-    PROFILE: isPT ? "Profile" : "Profile",
-    EXPERIENCE: isPT ? "Experience" : "Experience",
-    SKILLS: isPT ? "Skills" : "Skills",
-    EDUCATION: isPT ? "Education" : "Education",
-    CERTIFICATIONS: isPT ? "Certifications" : "Certifications"
+    PROFILE: isPT ? "Resumo Profissional" : "Profile",
+    EXPERIENCE: isPT ? "Experiência Profissional" : "Experience",
+    SKILLS: isPT ? "Habilidades Técnicas" : "Skills",
+    EDUCATION: isPT ? "Formação Acadêmica" : "Education",
+    CERTIFICATIONS: isPT ? "Certificações" : "Certifications"
   };
 
   const getContactItems = () => {
@@ -81,7 +81,7 @@ export function ModernAtsTemplate({ resume, isExport, language = "en-US" }: { re
                 <div className="flex justify-between items-baseline mb-0.5">
                   <h4 className="font-bold text-[15px] text-[#0f172a]">{exp.title}</h4>
                   <span className="text-[14px] text-[#64748b]">
-                    {exp.startDate} – {exp.endDate || (isPT ? 'Atualmente' : 'Present')}
+                    {exp.startDate} – {exp.endDate || (isPT ? 'Presente' : 'Present')}
                   </span>
                 </div>
                 <div className="text-[14px] text-[#475569] mb-2">
