@@ -245,6 +245,16 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
                   <div key={q.id} className="bg-secondary/30 p-4 rounded-lg">
                     <p className="text-[14px] font-semibold mb-2">{i + 1}. {q.question}</p>
                     <p className="text-[12px] text-blue-400 mb-3 font-medium">Motivo: {q.reason}</p>
+                    {q.suggestedAnswer && (
+                      <button
+                        type="button"
+                        onClick={() => setAnswers({ ...answers, [q.id]: q.suggestedAnswer })}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded border border-indigo-500/20 mb-2 hover:bg-indigo-500/20 hover:text-indigo-300 transition-colors cursor-pointer"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        Usar Sugestão da IA
+                      </button>
+                    )}
                     <Textarea 
                       className="text-[13px] bg-background" 
                       placeholder="Sua resposta..."
@@ -328,11 +338,15 @@ export function EditorClient({ analysisId }: { analysisId: string }) {
                   <div key={q.id} className="bg-secondary/30 p-4 rounded-lg">
                     <p className="text-[14px] font-medium mb-2">{i + 1}. {q.question}</p>
                     <p className="text-[12px] text-indigo-300 mb-3">Motivo: {q.reason}</p>
-                    {!q.answer && q.suggestedAnswer && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 mb-2">
+                    {q.suggestedAnswer && (
+                      <button
+                        type="button"
+                        onClick={() => setAnswers({ ...answers, [q.id]: q.suggestedAnswer })}
+                        className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded border border-indigo-500/20 mb-2 hover:bg-indigo-500/20 hover:text-indigo-300 transition-colors cursor-pointer"
+                      >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        Sugestão da IA (baseada no seu histórico)
-                      </span>
+                        Usar Sugestão da IA
+                      </button>
                     )}
                     <Textarea 
                       className="text-[13px] bg-background" 
