@@ -20,6 +20,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Allow internal Puppeteer PDF export requests (no cookies available)
+  if (pathname.includes("/preview") && request.nextUrl.searchParams.get("export") === "true") {
+    return NextResponse.next();
+  }
+
   const isProtectedRoute = 
     pathname === "/" ||
     pathname.startsWith("/analysis") || 
